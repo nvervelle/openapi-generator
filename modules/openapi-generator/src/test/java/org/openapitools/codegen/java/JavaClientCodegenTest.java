@@ -2277,4 +2277,28 @@ public class JavaClientCodegenTest {
 
         // shouldn't throw stackoverflow exception
     }
+
+    @Test
+    public void testTypeMappingAndSupportUrlQuery() throws IOException {
+        File output = Files.createTempDirectory("test").toFile();
+        output.deleteOnExit();
+
+        final CodegenConfigurator configurator = new CodegenConfigurator()
+                .setGeneratorName("java")
+                .setLibrary(JavaClientCodegen.NATIVE)
+                .setInputSpec("src/test/resources/3_0/issue_16183.yaml")
+                .addTypeMapping("Fields","Map")
+                .addImportMapping("Map","java.util.Map")
+                .setOutputDir(output.getAbsolutePath().replace("\\", "/"));
+
+        final ClientOptInput clientOptInput = configurator.toClientOptInput();
+        DefaultGenerator generator = new DefaultGenerator();
+        generator.opts(clientOptInput).generate();
+
+        Path response = Paths.get(output + "/src/main/java/org/openapitools/client/model/Response.java");
+        TestUtils.assertFileContains(response, "import java.util.Map;");
+        TestUtils.assertFileContains(response, "private Map fields;");
+        TestUtils.assertFileContains(response, "public Map getFields() {");
+        TestUtils.assertFileNotContains(response, "getFields().toUrlQueryString(");
+    }
 }

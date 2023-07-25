@@ -1,0 +1,77 @@
+openapi: 3.0.2
+info:
+  description: TEST
+  title: TEST
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /test:
+    post:
+      description: Test
+      operationId: TEST
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+          description: Successful Response
+      summary: Test
+      x-content-type: multipart/form-data
+      x-accepts: application/json
+components:
+  schemas:
+    Fields1:
+      additionalProperties: false
+      description: Schema for fields 1
+      example:
+        attribute1: OK
+      properties:
+        attribute1:
+          enum:
+          - OK
+          - KO
+          title: Attribute1
+          type: string
+      required:
+      - attribute1
+      title: Fields1
+      type: object
+    Fields2:
+      additionalProperties: false
+      description: Schema for fields 2
+      example:
+        attribute2: OK
+      properties:
+        attribute2:
+          enum:
+          - OK
+          - KO
+          title: Attribute2
+          type: string
+      required:
+      - attribute2
+      title: Fields2
+      type: object
+    Fields:
+      anyOf:
+      - $ref: '#/components/schemas/Fields1'
+      - $ref: '#/components/schemas/Fields2'
+      description: Defines all possible fields.
+      title: Fields
+    Response:
+      description: Schema of the response from the service.
+      example:
+        text: Text
+        fields: null
+      properties:
+        text:
+          type: string
+        fields:
+          $ref: '#/components/schemas/Fields'
+      required:
+      - text
+      - fields
+      title: Response
+      type: object
